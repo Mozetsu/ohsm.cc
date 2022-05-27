@@ -1,10 +1,11 @@
 import { getCORSHeaders } from "./cors";
 import { customAlphabet } from "nanoid";
+import bcrypt from "bcryptjs";
 
 export const alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const extendedAlphabet = [...alphabet, "\\-", "\\_"].join("");
 export const slugRegex = new RegExp(`(?!.*(-|_)$)(?!^(-|_).*)^[${extendedAlphabet}]{3,}$`, "i");
-const URLRegex = /^(https?:\/\/[^\s\.]+\.[^\s]{2,})/i;
+export const URLRegex = new RegExp("(^http[s]?:/{2})|(^www)|(^/{1,2})", "i");
 
 const nanoid = customAlphabet(alphabet, 5);
 
@@ -12,6 +13,7 @@ const ErrorCodes = {
 	BAD_REQ: { code: "BAD_REQ", message: "Bad Request." },
 	BAD_URL: { code: "BAD_URL", message: "Provided URL is not a valid one." },
 	BAD_SLUG: { code: "BAD_SLUG", message: "Slug is not in correct format." },
+	BAD_PASSWORD: { code: "BAD_PASSWORD", message: "Incorrect password." },
 	SLUG_NA: { code: "SLUG_NA", message: "Slug already in use." },
 	NO_RECURSIVE: { code: "NO_RECURSIVE", message: "No recursive shortening." },
 };
@@ -34,6 +36,10 @@ async function api(event) {
 			return shortenUrl(event);
 		}
 
+		if (method === "POST" && pathname.split("/")[2] === "unlock") {
+			return getUrl(event);
+		}
+
 		return new Response(JSON.stringify({ status: "online" }));
 	} catch (e) {
 		return new Response("Internal Error", { status: 500 });
@@ -48,7 +54,7 @@ async function shortenUrl(event) {
 		return respond(event, event, ErrorCodes.BAD_REQ, 400);
 	}
 
-	const { url, slug } = body;
+	const { url, slug, password } = body;
 
 	// Url has to be valid url.
 	if (!URLRegex.test(url)) {
@@ -76,16 +82,6 @@ async function shortenUrl(event) {
 	// Generate short link if slug not provided.
 	const urlSlug = slug || nanoid();
 
-	const shortUrl = {
-		clicks: 0,
-		urlSlug,
-		protected: false,
-		password: null,
-		longUrl: url,
-		shortUrl: `ohsm.cc/${urlSlug}`,
-		createdAt: Date.now(),
-	};
-
 	// Does url exist?
 	const UrlExists = await URLS.get(urlSlug);
 
@@ -98,13 +94,31 @@ async function shortenUrl(event) {
 		return shortenUrl(event);
 	}
 
+	const shortUrl = {
+		clicks: 0,
+		urlSlug,
+		protected: password ? true : false,
+		password: password ? hashPassword(password) : null,
+		longUrl: url,
+		shortUrl: `ohsm.cc/${urlSlug}`,
+		createdAt: Date.now(),
+	};
+
 	// Everyting is ok.
 	await URLS.put(urlSlug, JSON.stringify(shortUrl));
 
 	return respond(event, shortUrl);
 }
 
-async function getOriginalLink(event) {
+function hashPassword(passwordString) {
+	return bcrypt.hashSync(passwordString, 8);
+}
+
+function isValidPassword(passwordString, hash) {
+	return bcrypt.compareSync(passwordString, hash);
+}
+
+async function getUrl(event) {
 	let body;
 	try {
 		body = await event.request.json();
@@ -112,11 +126,15 @@ async function getOriginalLink(event) {
 		return respond(event, ErrorCodes.BAD_REQ, 400);
 	}
 
-	const { slug } = body;
+	const { slug, password } = body;
 
-	return respond(event, {
-		url: await kesim_data.get(slug),
-	});
+	const url = JSON.parse(await URLS.get(slug));
+
+	if (!isValidPassword(password, url.password)) {
+		return respond(event, ErrorCodes.BAD_PASSWORD, 400);
+	}
+
+	return respond(event, url.longUrl);
 }
 
 function respond(event, data = {}, status = 200, headers = {}) {

@@ -21,7 +21,6 @@ async function handleStaticRequest(event) {
 		response.headers.set("X-Content-Type-Options", "nosniff");
 		response.headers.set("X-Frame-Options", "DENY");
 		response.headers.set("Referrer-Policy", "unsafe-url");
-		response.headers.set("Feature-Policy", "none");
 
 		return response;
 	} catch (error) {
@@ -34,4 +33,15 @@ async function handleStaticRequest(event) {
 		} catch (e) {}
 		return new Response(error.message || error.toString(), { status: 500 });
 	}
+}
+
+export async function serveHTML(event, filename) {
+	const notFoundResponse = await getAssetFromKV(event, {
+		mapRequestToAsset: (req) => new Request(`${new URL(req.url).origin}/${filename}.html`, req),
+	});
+
+	return new Response(notFoundResponse.body, {
+		...notFoundResponse,
+		status: 404,
+	});
 }

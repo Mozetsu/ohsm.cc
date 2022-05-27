@@ -1,3 +1,5 @@
+import { serveHTML } from "../site";
+
 export default (event) => {
 	return event.respondWith(redirect(event));
 };
@@ -16,6 +18,12 @@ async function redirect(event) {
 	const url = JSON.parse(await URLS.get(slug));
 
 	if (url) {
+		// Check if URL is protected
+		if (url.protected) {
+			return serveHTML(event, "unlock");
+		}
+
+		// Redirect client
 		const redirres = Response.redirect(url.longUrl, 301);
 		const response = new Response(redirres.body, redirres);
 
@@ -26,5 +34,5 @@ async function redirect(event) {
 		return response;
 	}
 
-	return new Response("Not Found!", { status: 404 });
+	return serveHTML(event, "404");
 }
