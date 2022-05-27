@@ -1,8 +1,11 @@
-name = "serverless-api"
-main = "src/index.js"
-compatibility_date = "2022-05-26"
+name = "ohsm"
 account_id = "6ba15c2c073f33d921135043c8642cc3"
+main = "workers-site/index.js"
+compatibility_date = "2022-05-26"
 workers_dev = true
+routes = [
+  "ohsm.cc/*",
+]
 
 kv_namespaces = [
   { binding = "URLS", id = "528f897efad04bb182625e2d44d30e72", preview_id = "3842853326cc4780adb7d89febeec38b" }
