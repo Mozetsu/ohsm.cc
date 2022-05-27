@@ -3,6 +3,7 @@ account_id = "6ba15c2c073f33d921135043c8642cc3"
 main = "workers-site/index.js"
 compatibility_date = "2022-05-26"
 workers_dev = true
+node_compat = true
 routes = [
   "ohsm.cc/*",
 ]
