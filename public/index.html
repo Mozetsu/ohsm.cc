@@ -4,9 +4,44 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Document</title>
+		<title>URL Shortener | ohsm.cc</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script defer type="module" src="./main.js"></script>
+		<link rel="stylesheet" href="./main.css" />
 	</head>
 	<body>
-		<main><h1>OHSM.CC</h1></main>
+		<main class="w-screen h-[100vh] text-gray-700">
+			<section class="container mx-auto p-4 text-xl">
+				<section class="mx-auto w-full max-w-[1000px] mt-12">
+					<section class="text-center">
+						<h1 class="text-8xl font-[pacifico]">Ohsm.cc</h1>
+						<p class="text-2xl mt-5">Blazing fast, minimal URL shortener.</p>
+					</section>
+					<article class="flex border rounded-sm relative my-8 ">
+						<input
+							class="text-box pl-6 pr-16 py-6 w-full h-full text-ellipsis"
+							type="text"
+							placeholder="Paste long URL..."
+						/>
+						<button class="submit-btn absolute right-0 h-full px-6">Go</button>
+					</article>
+					<article></article>
+					<section class="mt-8 flex flex-col space-y-4">
+						<article class="border rounded-sm overflow-auto">
+							<table class="table-auto w-full">
+								<thead>
+									<tr class="text-left">
+										<th class="px-6 py-4">Hits</th>
+										<th class="px-6 py-4">Base</th>
+										<th class="px-6 py-4">Short</th>
+									</tr>
+								</thead>
+								<tbody class="url-container"></tbody>
+							</table>
+						</article>
+					</section>
+				</section>
+			</section>
+		</main>
 	</body>
 </html>
