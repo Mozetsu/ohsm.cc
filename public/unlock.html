@@ -7,7 +7,7 @@
 		<title>URL Shortener | ohsm.cc</title>
 		<script src="https://cdn.tailwindcss.com"></script>
 		<link rel="icon" href="./favicon.svg" />
-		<script defer type="module" src="./main.js"></script>
+		<script defer type="module" src="./unlock.js"></script>
 		<link rel="stylesheet" href="./main.css" />
 	</head>
 	<body class="p-8">
@@ -32,39 +32,17 @@
 			<section class="container w-full mx-auto my-4">
 				<form
 					id="form"
-					action="/create"
+					action="/unlock"
 					method="post"
 					class="grid md:grid-cols-2 space-y-6 gap-x-4 p-5 sm:p-10 border rounded"
 				>
 					<section class="md:col-span-full space-y-1">
-						<h1 class="text-lg md:text-3xl font-black">Create ohsm (awesome) URLs</h1>
-						<p class="">Each URL will last for one week before being deleted</p>
+						<h1 class="text-lg md:text-3xl font-black">Protected URL</h1>
+						<p class="">Protected URL's can only be accessed with a password</p>
 					</section>
 					<hr class="col-span-full" />
-					<div class="block space-y-2 md:col-span-full">
-						<label class="block text-gray-400">Paste the long URL below</label>
-						<input
-							id="url"
-							name="url"
-							type="text"
-							class="form-input w-full border p-3 rounded bg-purple-50 focus:border-2 focus:outline-none focus:border-purple-500 placeholder-shown:bg-white placeholder-shown:border-1 placeholder-shown:border-gray-300  border-purple-500 transition ease-in-out"
-							placeholder="Long URL..."
-						/>
-						<p id="url-error" class="mt-2 text-pink-600 hidden"></p>
-					</div>
 					<div class="block space-y-2">
-						<label class="block text-gray-400">Custom slug (ohsm.cc/slug)</label>
-						<input
-							id="slug"
-							name="slug"
-							type="text"
-							class="form-input w-full border p-3 rounded bg-purple-50 focus:border-2 focus:outline-none focus:border-purple-500 placeholder-shown:bg-white placeholder-shown:border-1 placeholder-shown:border-gray-300  border-purple-500 transition ease-in-out"
-							placeholder="Slug..."
-						/>
-						<p id="slug-error" class="mt-2 text-pink-600 hidden"></p>
-					</div>
-					<div class="block space-y-2">
-						<label class="block text-gray-400">Protect URL with password?</label>
+						<label class="block text-gray-400">Enter password to proceed</label>
 						<input
 							id="password"
 							name="password"
@@ -77,25 +55,9 @@
 					<input
 						type="submit"
 						class="w-full md:w-fit justify-center submit-btn bg-purple-600 hover:bg-purple-700 self-end text-white py-3 px-6 rounded inline-flex items-center cursor-pointer md:col-start-2 focus:ring-1 ring-purple-500 ring-offset-2 place-self-end"
-						value="Get awesome URL"
+						value="Validate"
 					/>
 				</form>
-				<article></article>
-				<section class="mt-8 flex flex-col ">
-					<section class="url-container overflow-auto">
-						<!-- <article class="odd:bg-gray-50 flex items-center">
-								<p class="p-6">2</p>
-								<p class="p-6">https://www.npmjs.com/package/nanoid</p>
-								<a
-									href="https://ohsm.cc/${urlSlug}"
-									target="_blank"
-									class="p-6 hover:underline hover:underline-offset-2 text-purple-600 font-medium"
-								>
-									<p>ohsm.cc/f123r</p>
-								</a>
-							</article> -->
-					</section>
-				</section>
 			</section>
 		</main>
 	</body>

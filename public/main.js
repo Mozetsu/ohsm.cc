@@ -1,32 +1,23 @@
-const URLRegex = /^(https?:\/\/[^\s\.]+\.[^\s]{2,})/i;
-const inputHTML = document.querySelector(".text-box");
-const submitBtn = document.querySelector(".submit-btn");
+import { handler, validForm } from "./handlers.js";
+
 const urlContainer = document.querySelector(".url-container");
-
-// truncate url if too long
 const sliceLongUrl = (url, limit) => (url.length > limit ? `${url.slice(0, limit)}...` : url);
+const addUrlHTML = ({ clicks, longUrl, urlSlug }) => ``;
 
-const addUrlHTML = ({ clicks, longUrl, urlSlug }) => `
-			<tr class="odd:bg-gray-50">
-				<td class="p-6">${clicks}</td>
-				<td class="p-6">${sliceLongUrl(longUrl, 50)}</td>
-				<td class="p-6">
-					<a
-						href="https://ohsm.cc/${urlSlug}"
-						target="_blank"
-						class="hover:underline hover:underline-offset-2 text-purple-600 font-medium"
-					>
-						<p>ohsm.cc/${urlSlug}</p>
-					</a>
-				</td>
-			</tr>
-`;
+document.querySelectorAll(".form-input").forEach((input) => {
+	input.addEventListener("change", handler);
+});
 
-submitBtn.addEventListener("click", async (event) => {
-	if (!inputHTML.value || !URLRegex.test(inputHTML.value)) return;
+const form = document.querySelector("#form");
+form.addEventListener("submit", async (event) => {
+	event.preventDefault();
 
-	const data = {
-		url: inputHTML.value,
+	if (!validForm) return;
+
+	const URLData = {
+		url: event.target.elements.url.value,
+		slug: event.target.elements.slug.value,
+		password: event.target.elements.password.value,
 	};
 
 	const response = await fetch("/api/create", {
@@ -34,12 +25,20 @@ submitBtn.addEventListener("click", async (event) => {
 		headers: {
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify(data),
+		body: JSON.stringify(URLData),
 	});
 
-	inputHTML.value = "";
+	const parsedResponse = await response.json();
 
-	const urlData = await response.json();
+	// Check for errors
+	if (parsedResponse.code) {
+		return console.error(parsedResponse.code);
+	}
 
-	urlContainer.insertAdjacentHTML("afterbegin", addUrlHTML(urlData));
+	// Clear input fields
+	event.target.elements.url.value = "";
+	event.target.elements.slug.value = "";
+	event.target.elements.password.value = "";
+
+	console.log(parsedResponse);
 });
